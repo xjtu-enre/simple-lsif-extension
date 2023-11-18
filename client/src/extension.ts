@@ -26,13 +26,13 @@ export function activate(context: ExtensionContext) {
 				canSelectFiles: true,
 				canSelectFolders: false,
 				canSelectMany: true,
-				filters: { 'LSIF': ['db', 'lsif'] }
+				filters: { 'LSIF': ['lsif'] },
 			}
 		).then((values: Uri[] | undefined) => {
 			if (values === undefined || values.length === 0) {
 				return;
 			}
-			let toAdd = values.map((uri) => { return { uri: uri.with({ scheme: 'lsif'}) }; });
+			let toAdd = values.map((uri) => { return { uri: uri.with({ scheme: 'lsif' }) }; });
 			workspace.updateWorkspaceFolders(
 				workspace.workspaceFolders ? workspace.workspaceFolders.length : 0,
 				0,
@@ -52,7 +52,7 @@ export function activate(context: ExtensionContext) {
 	// If the extension is launched in debug mode then the debug server options are used
 	// Otherwise the run options are used
 	let serverOptions: ServerOptions = {
-		run: { module: serverModule, transport: TransportKind.ipc },
+		run: { module: serverModule, transport: TransportKind.ipc, options: debugOptions },
 		debug: {
 			module: serverModule,
 			transport: TransportKind.ipc,
@@ -79,7 +79,7 @@ export function activate(context: ExtensionContext) {
 		client.start().then(() => { resolve(client); }, reject);
 	});
 
-	workspace.registerFileSystemProvider('lsif', new LsifFS(clientPromise), { isCaseSensitive: true, isReadonly: true});
+	workspace.registerFileSystemProvider('lsif', new LsifFS(clientPromise), { isCaseSensitive: true, isReadonly: true });
 }
 
 export function deactivate(): Thenable<void> | undefined {
@@ -144,7 +144,7 @@ class LsifFS implements FileSystemProvider {
 
 	watch(uri: Uri, options: { recursive: boolean; excludes: string[]; }): Disposable {
 		// The LSIF file systrem never changes.
-		return Disposable.create(():void => {});
+		return Disposable.create((): void => { });
 	}
 
 	async stat(uri: Uri): Promise<FileStat> {

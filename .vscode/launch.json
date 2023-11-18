@@ -6,8 +6,13 @@
 			"request": "launch",
 			"name": "Launch Client",
 			"runtimeExecutable": "${execPath}",
-			"args": ["--extensionDevelopmentPath=${workspaceRoot}"],
-			"outFiles": ["${workspaceRoot}/client/out/**/*.js"],
+			"args": [
+				"--extensionDevelopmentPath=${workspaceRoot}"
+			],
+			"sourceMaps": true,
+			"outFiles": [
+				"${workspaceRoot}/client/out/*"
+			],
 			"preLaunchTask": {
 				"type": "npm",
 				"script": "watch"
@@ -18,20 +23,13 @@
 			"request": "launch",
 			"name": "Launch Client LSIF",
 			"runtimeExecutable": "${execPath}",
-			"args": ["--extensionDevelopmentPath=${workspaceRoot}", "--folder-uri=lsif:///c:/Users/dirkb/Projects/mseng/VSCode/vscode-lsif-extension/samples/jsonrpc.lsif"],
-			"outFiles": ["${workspaceRoot}/client/out/**/*.js"],
-			"preLaunchTask": {
-				"type": "npm",
-				"script": "watch"
-			}
-		},
-		{
-			"type": "extensionHost",
-			"request": "launch",
-			"name": "Launch Client SQLite",
-			"runtimeExecutable": "${execPath}",
-			"args": ["--extensionDevelopmentPath=${workspaceRoot}", "--folder-uri=lsif:///c:/Users/dirkb/Projects/mseng/VSCode/vscode-lsif-extension/samples/jsonrpc.db"],
-			"outFiles": ["${workspaceRoot}/client/out/**/*.js"],
+			"args": [
+				"--extensionDevelopmentPath=${workspaceRoot}",
+				"--folder-uri=lsif:///Users/thisrabbit/Projects/simple-lsif-extension/samples/jsonrpc.lsif"
+			],
+			"outFiles": [
+				"${workspaceRoot}/client/out/**/*.js"
+			],
 			"preLaunchTask": {
 				"type": "npm",
 				"script": "watch"
@@ -42,22 +40,19 @@
 			"request": "attach",
 			"name": "Attach to Server",
 			"port": 6029,
-			"outFiles": ["${workspaceRoot}/server/out/**/*.js"]
+			"outFiles": [
+				"${workspaceRoot}/server/out/*"
+			],
+			"sourceMaps": true,
 		},
-		{
-			"type": "node",
-			"request": "launch",
-			"name": "Testing DB",
-			"program": "${workspaceFolder}/server/out/test.js",
-			"cwd": "${workspaceFolder}/server",
-			"outFiles": ["${workspaceRoot}/server/out/**/*.js"],
-			"sourceMaps": true
-		}
 	],
 	"compounds": [
 		{
 			"name": "Client + Server",
-			"configurations": ["Launch Client", "Attach to Server"]
+			"configurations": [
+				"Launch Client LSIF",
+				"Attach to Server"
+			]
 		}
 	]
 }

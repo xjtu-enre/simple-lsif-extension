@@ -7,7 +7,7 @@ import { promisify } from 'util';
 import * as path from 'path';
 import * as fs from 'fs';
 
-import { URI  } from 'vscode-uri';
+import { URI } from 'vscode-uri';
 import {
 	createConnection, ProposedFeatures, InitializeParams, TextDocumentSyncKind, WorkspaceFolder,
 	BulkUnregistration, BulkRegistration, DocumentSymbolRequest, DocumentSelector, FoldingRangeRequest,
@@ -61,8 +61,8 @@ class Transformer implements UriTransformer {
 		} else {
 			let parsed = URI.parse(uri);
 			if (parsed.scheme === LSIF_SCHEME && parsed.query) {
-				return parsed.with( { scheme: 'file', query: '' } ).toString(true);
-			} else  {
+				return parsed.with({ scheme: 'file', query: '' }).toString(true);
+			} else {
 				return uri;
 			}
 		}
@@ -73,7 +73,7 @@ class Transformer implements UriTransformer {
 			return `${this.lsif}${p}`;
 		} else {
 			let file = URI.parse(uri);
-			return file.with( { scheme: LSIF_SCHEME, query: this.lsif }).toString(true);
+			return file.with({ scheme: LSIF_SCHEME, query: this.lsif }).toString(true);
 		}
 	}
 }
@@ -105,42 +105,16 @@ async function createDatabase(folder: WorkspaceFolder): Promise<Database | undef
 	const fsPath = uri.fsPath;
 	const extName = path.extname(fsPath);
 	if (fs.existsSync(fsPath)) {
-		try {
-			let database: Database | undefined;
-			if (extName === '.db') {
-				const Sqlite = await import('better-sqlite3');
-				const db = new Sqlite(fsPath, { readonly: true });
-				let format = 'graph';
-				try {
-					format = db.prepare('Select * from format f').get().format;
-				} catch (err) {
-					// Old DBs have no format. Treat is as graph
-				} finally {
-					db.close();
-				}
-				if (format === 'blob') {
-					const module = await import('./blobStore');
-					database = new module.BlobStore();
-				} else {
-					const module = await import ('./graphStore');
-					database = new module.GraphStore();
-				}
-			} else if (extName === '.lsif') {
-				const module = await import('./jsonStore');
-				database = new module.JsonStore();
-			}
-			if (database !== undefined) {
-				let promise = database.load(fsPath, (workspaceRoot: string) => {
-					return new Transformer(uri, workspaceRoot);
-				}).then(() => {
-					return database!;
-				});
-				databases.set(getDatabaseKey(folder.uri), promise);
-				return promise;
-			}
-		} catch (error) {
-			throw error;
-		}
+		const module = await import('./jsonStore');
+		const database = new module.JsonStore();
+
+		let promise = database.load(fsPath, (workspaceRoot: string) => {
+			return new Transformer(uri, workspaceRoot);
+		}).then(() => {
+			return database!;
+		});
+		databases.set(getDatabaseKey(folder.uri), promise);
+		return promise;
 	}
 	return Promise.reject(new Error(`Can't create database for ${folder.uri}`));
 }
